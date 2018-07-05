@@ -1,0 +1,5 @@
+[run]
+omit =
+ prerun.py
+ project/wsgi.py
+ manage.py

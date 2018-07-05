@@ -1,0 +1,67 @@
+---
+
+version: '2'
+services:
+  mail:
+    image: djfarrelly/maildev
+    ports:
+     - "1080:80"
+
+  postgres:
+    image: postgres:10.4
+    env_file: .env
+    ports:
+      - "5432:5432"
+
+  web:
+    build: ./service/
+    env_file: .env
+    depends_on:
+      - postgres
+      - sentinel
+      - mail
+    ports:
+      - "1022:22"
+    command: bash start.sh
+    volumes:
+      - ./service/:/www
+      - .git:/.git
+
+  worker:
+    build: ./service/
+    env_file: .env
+    depends_on:
+      - postgres
+      - sentinel
+    command: bash celery_worker.sh
+    volumes:
+      - ./service/:/www
+      - .git:/.git
+
+  redis-master:
+    image: redis:3.2.11
+
+  sentinel:
+    build: sentinel
+    env_file: .env
+    ports:
+      - "26379:26379"
+    depends_on:
+      - redis-master
+
+  nginx:
+    build: ./nginx
+    env_file: .env
+    depends_on:
+      - web
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/sites-enabled:/etc/nginx/sites-enabled
+      - ./service/static/:/www/static
+      - ./service/media/:/www/media
+
+  elasticsearch:
+    image: elasticsearch
+    environment:
+      ES_JAVA_OPTS: "-Xms1g -Xmx1g"

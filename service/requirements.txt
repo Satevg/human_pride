@@ -1,0 +1,16 @@
+celery==4.2.0
+coverage==4.5.1
+Django==2.0.7
+django-celery-results==1.0.1
+django-debug-toolbar==1.9.1
+django-extensions==2.0.7
+elasticsearch==6.3.0
+elasticsearch-dsl==6.2.1
+flake8==3.5.0
+mock==2.0.0
+psycopg2==2.7.5
+pytz==2018.5
+redis==2.10.6
+requests==2.19.1
+requests-mock==1.5.0
+uWSGI==2.0.17

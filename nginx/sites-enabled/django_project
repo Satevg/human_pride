@@ -1,0 +1,52 @@
+server {
+    listen 80 default;
+    server_name project.example.com;
+    charset utf-8;
+    root /www/;
+    client_max_body_size       30m;
+
+    location /app {
+        location ~* ^.+\.(?:css|js|jpe?g|gif|htc|ico|png|otf|ttf|eot|woff|svg)$ {
+            expires 365d;
+        }
+        gzip_static on;
+        autoindex off;
+        try_files $uri $uri/ /app/index.html;
+    }
+
+    location /static/ {
+        autoindex off;
+        try_files $uri $uri/ @app;
+    }
+
+    location /media/ {
+        autoindex off;
+        try_files $uri $uri/ @app;
+    }
+
+    location / {
+        error_page 418 = @app;
+        return 418;
+    }
+
+    location @app {
+
+        proxy_pass http://web:8000;
+        proxy_redirect     off;
+        proxy_set_header   Host             $http_host;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+
+        client_max_body_size       30m;
+        client_body_buffer_size    128k;
+
+        proxy_connect_timeout      5;
+        proxy_send_timeout         30;
+        proxy_read_timeout         30;
+
+        proxy_buffer_size          4k;
+        proxy_buffers              4 32k;
+        proxy_busy_buffers_size    64k;
+        proxy_temp_file_write_size 64k;
+    }
+}
