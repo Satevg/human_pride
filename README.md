@@ -1,1 +1,1 @@
-# django-docker-seed
+### Human Pride :D

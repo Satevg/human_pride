@@ -38,13 +38,14 @@ ALLOWED_HOSTS = [os.getenv('DJANGO_HOST', '*'), ]
 # Application definition
 
 INSTALLED_APPS = [
+    'channels',
+    'pride',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'django_celery_results',
     'django_extensions',
 ] + (['debug_toolbar', ] if DEBUG and not TEST_MODE else [])
 
@@ -77,21 +78,21 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'project.wsgi.application'
+ASGI_APPLICATION = "project.routing.application"
+CHANNEL_LAYERS = {
+    'default': {
+        'BACKEND': 'channels_redis.core.RedisChannelLayer',
+        'CONFIG': {
+            "hosts": [('redis', 6379)],
+        },
+    },
+}
 
-
-# Database
 # https://docs.djangoproject.com/en/2.0/ref/settings/#databases
-
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
-        'NAME': os.getenv('POSTGRES_DB', 'postgres'),
-        'USER': os.getenv('POSTGRES_USER', 'postgres'),
-        'PASSWORD': os.getenv('POSTGRES_PASSWORD', 'postgres'),
-        'HOST': os.getenv('POSTGRES_HOST', 'postgres'),
-        'PORT': int(os.getenv('POSTGRES_PORT', '5432')),
-        'ATOMIC_REQUESTS': True,
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
     }
 }
 
@@ -133,6 +134,7 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/2.0/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 if TEST_MODE:
@@ -148,12 +150,6 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_PORT = os.getenv('EMAIL_PORT', 25)
 EMAIL_USE_TLS = str2bool(os.getenv('EMAIL_USE_TLS', 'false'))
 EMAIL_USE_SSL = str2bool(os.getenv('EMAIL_USE_SSL', 'false'))
-
-CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL', 'sentinel://sentinel:26379//')
-CELERY_RESULT_BACKEND = 'django-db'
-CELERY_BROKER_TRANSPORT_OPTIONS = {
-    'master_name': 'mymaster'
-}
 
 if DEBUG and not TEST_MODE:
     DEBUG_TOOLBAR_CONFIG = {
@@ -176,8 +172,6 @@ if TEST_MODE:
     USE_I18N = False
 
     USE_L10N = False
-
-    CELERY_TASK_ALWAYS_EAGER = True
 
 
 LOGGING = {

@@ -1,7 +1,5 @@
 #!/bin/bash
 
-sleep 10
-
 if [ "$DJANGO_DEBUG" = "true" ]; then
     echo "[START] install dependencies"
     pip install -r requirements.txt
@@ -15,8 +13,8 @@ if [ "$PRERUN" = "true" ]; then
     echo "exec(open('prerun.py').read())" | python manage.py shell
 fi
 
-# Touch this file to restart uwsgi processes
-touch /tmp/touch-me
+echo "[START] Fake crontab job"
+/bin/bash /home/fake_crontab.sh &
 
 if [ "$DJANGO_DEBUG" = "true" ]; then
     # remove static files(if there are) for django to serve them from application folders instead of nginx
@@ -32,11 +30,10 @@ else
       --env DJANGO_SETTINGS_MODULE=project.settings \
       --master \
       --http=0.0.0.0:8000 \
-      --processes=5 \
+      --processes=2 \
       --uid=1000 --gid=2000 \
       --harakiri=20 \
       --max-requests=5000 \
       --vacuum \
-      --master-fifo /tmp/uwsgififo \
-      --touch-reload=/tmp/touch-me
+      --master-fifo /tmp/uwsgififo
 fi

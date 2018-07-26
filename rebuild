@@ -2,29 +2,13 @@
 PROJECT_PATH=$(dirname $(readlink -f "$0"))
 
 cd $PROJECT_PATH
-docker-compose stop mail postgres web worker redis-master sentinel elasticsearch
+docker-compose stop web redis
 
 echo "[START in parallel] docker containers build started. Please wait while it finished"
 docker-compose build > build-output.txt 2>&1 &
 
 source .env 2>/dev/null
 
-
 touch build-output.txt && cat build-output.txt && rm build-output.txt
 
-docker-compose up -d --force-recreate mail postgres web worker redis-master sentinel elasticsearch frontend
-
-function waitForPort() {
-    counter="0"
-    while [ $counter -lt 200 ]
-    do
-        sleep 0.1
-        nc -z 127.0.0.1 $1 &> /dev/null && counter=$((counter+200)) || counter=$((counter+1))
-    done
-}
-
-# wait for sentinel to get running
-waitForPort 26379
-
-docker-compose stop nginx
-docker-compose up -d --force-recreate nginx
+docker-compose up -d --force-recreate web redis nginx

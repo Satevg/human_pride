@@ -3,13 +3,7 @@ PROJECT_PATH=$(dirname $(readlink -f "$0"))
 
 cd $PROJECT_PATH
 
-docker-compose exec -T web celery -A project control shutdown || true
-docker-compose exec -T web bash -c "echo q > /tmp/uwsgififo" || true
-
-# Wait for worker container to shutdown gracefully
-docker wait $(docker-compose ps -q worker)
-
-docker-compose stop mail postgres web worker redis-master sentinel elasticsearch
+docker-compose stop web redis nginx
 
 cp .env.template .env
 cp docker-compose.yml.template docker-compose.yml

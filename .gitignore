@@ -6,4 +6,4 @@ service/static
 service/media
 .env
 docker-compose.yml
-npm-debug.log
+postgres-data/
