@@ -3,43 +3,88 @@
 <!DOCTYPE html>
 <html>
 <link>
-    <meta charset="utf-8"/>
-    <title>Гордость человечества</title>
-    <script type="text/javascript" src="{% static 'js/anime.min.js' %}"></script>
+<meta charset="utf-8"/>
+<title>{% trans 'Human pride' %}</title>
+<script type="text/javascript" src="{% static 'js/anime.min.js' %}"></script>
+<link rel="stylesheet" type="text/css" href="{% static 'fonts/ProximaNova/proxima.css' %}"/>
 </head>
 <body>
-    <textarea id="chat-log" cols="100" rows="20"></textarea><br/>
-    <input id="chat-message-input" type="text" size="100"/><br/>
-    <input id="chat-message-submit" type="button" value="Send"/>
+<textarea id="chat-log" cols="100" rows="20"></textarea><br/>
+<div id="basicTimeline">
+    <ul id="search-items">
+        <div class="wrap">
+            <div class="item">LOREM Ipsum</div>
+        </div>
+        <div class="wrap">
+            <div class="item">OQOQOQ</div>
+        </div>
+        <div class="wrap">
+            <div class="item">SDFKEOOO</div>
+        </div>
+        <div class="wrap">
+            <div class="item">qfwefffffff qqqqqqqqqqqqq</div>
+        </div>
+    </ul>
 </body>
 <script>
-    var chatSocket = new WebSocket('ws://' + window.location.host + '/ws/humans/');
+    var prideSocket = new WebSocket('ws://' + window.location.host + '/ws/humans/');
 
-    chatSocket.onmessage = function(e) {
+    prideSocket.onmessage = function (e) {
         var data = JSON.parse(e.data);
         var message = data['message'];
         document.querySelector('#chat-log').value += (message + '\n');
     };
 
-    chatSocket.onclose = function(e) {
+    prideSocket.onclose = function (e) {
         console.error('Chat socket closed unexpectedly');
     };
 
-    document.querySelector('#chat-message-input').focus();
-    document.querySelector('#chat-message-input').onkeyup = function(e) {
-        if (e.keyCode === 13) {  // enter, return
-            document.querySelector('#chat-message-submit').click();
-        }
+
+    var w = window, d = document, e = d.documentElement, g = d.getElementsByTagName('body')[0];
+    var width = w.innerWidth || e.clientWidth || g.clientWidth
+
+
+    var basicTimeline = anime.timeline();
+    var els = document.querySelectorAll('.item');
+
+    var allCallbacks = anime({
+        targets: els,
+        translateX: [-20, "50%"],
+        easing: 'easeInOutBack',
+        elasticity: 100,
+        duration: function (el, i, l) {
+            return 500 + (i * 500);
+        },
+        delay: function (el, i, l) {
+            return i * 100;
+        },
+    });
+    allCallbacks.complete = function () {
+        console.log('CALL MOVE');
+        moveRight();
     };
 
-    document.querySelector('#chat-message-submit').onclick = function(e) {
-        var messageInputDom = document.querySelector('#chat-message-input');
-        var message = messageInputDom.value;
-        chatSocket.send(JSON.stringify({
-            'message': message
-        }));
+    function moveRight() {
+        anime({
+            targets: els,
+            translateX: ["50%", "150%"],
+            easing: 'easeInOutBack',
+            duration: function (el, i, l) {
+                return 500 + (i * 500);
+            },
+            delay: function (el, i, l) {
+                return i * 100;
+            },
+        });
+    }
 
-        messageInputDom.value = '';
-    };
+
 </script>
+<style>
+    body {
+        background-color: gainsboro;
+        overflow-y: scroll;
+        overflow-x: hidden;
+    }
+</style>
 </html>
