@@ -7,3 +7,4 @@ service/media
 .env
 docker-compose.yml
 postgres-data/
+db.sqlite3
