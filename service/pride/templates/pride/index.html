@@ -9,82 +9,122 @@
 <link rel="stylesheet" type="text/css" href="{% static 'fonts/ProximaNova/proxima.css' %}"/>
 </head>
 <body>
-<textarea id="chat-log" cols="100" rows="20"></textarea><br/>
-<div id="basicTimeline">
-    <ul id="search-items">
-        <div class="wrap">
-            <div class="item">LOREM Ipsum</div>
-        </div>
-        <div class="wrap">
-            <div class="item">OQOQOQ</div>
-        </div>
-        <div class="wrap">
-            <div class="item">SDFKEOOO</div>
-        </div>
-        <div class="wrap">
-            <div class="item">qfwefffffff qqqqqqqqqqqqq</div>
-        </div>
-    </ul>
+<div id="search-items">
+</div>
 </body>
 <script>
     var prideSocket = new WebSocket('ws://' + window.location.host + '/ws/humans/');
-
+    var searchQueries = [];
     prideSocket.onmessage = function (e) {
+        var isCacheEmpty = searchQueries.length == 0;
         var data = JSON.parse(e.data);
-        var message = data['message'];
-        document.querySelector('#chat-log').value += (message + '\n');
+        var queries = data['message'];
+        searchQueries.push.apply(searchQueries, queries);
+        if (isCacheEmpty) {
+            console.log('EMPTY START');
+            fromCacheToHtml();
+            showElements();
+        }
     };
 
     prideSocket.onclose = function (e) {
         console.error('Chat socket closed unexpectedly');
     };
 
+    function fromCacheToHtml() {
+        var elementsToShow = searchQueries.splice(0, 10); // should be same as in cron sender!!!!(TO DO)
+        var insert = '';
+        for (var i = 0; i < elementsToShow.length; i++) {
+            var item = elementsToShow[i];
+            insert += '<div class="wrap"><div class="item">' +
+                '<a class="link" target="_blank" href="https://www.yandex.ru/search/?text=' + item + '">' +
+                elementsToShow[i] +
+                '</div></div>';
+        }
+        document.getElementById('search-items').innerHTML = insert;
+    }
 
     var w = window, d = document, e = d.documentElement, g = d.getElementsByTagName('body')[0];
-    var width = w.innerWidth || e.clientWidth || g.clientWidth
+    var width = w.innerWidth || e.clientWidth || g.clientWidth;
 
 
-    var basicTimeline = anime.timeline();
-    var els = document.querySelectorAll('.item');
+    var delay = (function () {
+        var timer = 0;
+        return function (callback, ms) {
+            clearTimeout(timer);
+            timer = setTimeout(callback, ms);
+        };
+    })();
 
-    var allCallbacks = anime({
-        targets: els,
-        translateX: [-20, "50%"],
-        easing: 'easeInOutBack',
-        elasticity: 100,
-        duration: function (el, i, l) {
-            return 500 + (i * 500);
-        },
-        delay: function (el, i, l) {
-            return i * 100;
-        },
-    });
-    allCallbacks.complete = function () {
-        console.log('CALL MOVE');
-        moveRight();
-    };
-
-    function moveRight() {
-        anime({
+    function showElements() {
+        console.log('!!!! ' + searchQueries.length);
+        var els = document.querySelectorAll('.item');
+        var callback = anime({
             targets: els,
-            translateX: ["50%", "150%"],
+            translateX: [-200, "0%"],
             easing: 'easeInOutBack',
+            elasticity: 100,
             duration: function (el, i, l) {
-                return 500 + (i * 500);
+                return 200 + (i * 200);
             },
             delay: function (el, i, l) {
-                return i * 100;
+                return i * 30;
             },
         });
+
+        callback.complete = function () {
+            delay(function () {
+                moveRight(els);
+            }, 3000);
+        };
+    }
+
+    function moveRight(els) {
+        var callback = anime({
+            targets: els,
+            translateX: ["0%", "100vw"],
+            easing: 'easeInOutBack',
+            duration: function (el, i, l) {
+                return 150 + (i * 150);
+            },
+            delay: function (el, i, l) {
+                return i * 10;
+            },
+        });
+        callback.complete = function () {
+            // start new loop
+            fromCacheToHtml();
+            showElements();
+        }
     }
 
 
 </script>
 <style>
     body {
-        background-color: gainsboro;
+        background: #2196f3;
         overflow-y: scroll;
         overflow-x: hidden;
+    }
+
+    #search-items {
+        position: absolute;
+        top: 5%;
+        width: 100%;
+    }
+    .item {
+        text-align: center;
+    }
+    .wrap {
+        margin: 10px 10px;
+    }
+
+    .link {
+        color: white;
+        font-size: large;
+        font-size: 30px;
+        font-family: "Proxima Nova";
+        text-decoration: none;
     }
 </style>
 </html>

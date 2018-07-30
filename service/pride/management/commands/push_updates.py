@@ -14,13 +14,13 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         r = redis.Redis(host='redis', port=6379, db=0)
         list_length = r.llen(self.redis_key)
-        if list_length < 41:
+        if list_length < 51:
             response = requests.get('https://export.yandex.ru/last/last20x.xml')
             last_pride = ET.fromstring(response.content)[0]
             queries = [item.text for item in last_pride]
             r.rpush('pride', *queries)
 
-        return_num = 20
+        return_num = 25
         elements = r.lrange(self.redis_key, 0, return_num - 1)
         r.ltrim(self.redis_key, return_num, list_length - 1)
 
