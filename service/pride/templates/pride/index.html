@@ -7,46 +7,47 @@
 <title>{% trans 'Human pride' %}</title>
 <script type="text/javascript" src="{% static 'js/anime.min.js' %}"></script>
 <link rel="stylesheet" type="text/css" href="{% static 'fonts/ProximaNova/proxima.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/animate.min.css' %}"/>
+<link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
 </head>
 <body>
+<div id="header_div" class="hidden">
+    <h1 id="head_1" class="animated slow">{% trans 'Human Pride' %}</h1>
+    <h4 id="head_2" class="animated slow">{% trans 'Великие интернет запросы Великих людей' %}</h4>
+</div>
+
+<div class="wrap">
+    <div id="home_quote" class="loading animated fadeInDown slow">
+        <div class="bounceball"></div>
+        <div class="text">{% trans 'Бог умер: теперь мы хотим, чтобы жил сверхчеловек. - Ф. Ницше' %}</div>
+    </div>
+</div>
+
+
 <div id="search-items">
 </div>
+<div id="footer"><a id="ev_s" href="https://github.com/Satevg">Evgenii Sattarov</a></div>
 </body>
 <script>
+
     var prideSocket = new WebSocket('ws://' + window.location.host + '/ws/humans/');
     var searchQueries = [];
     prideSocket.onmessage = function (e) {
-        var isCacheEmpty = searchQueries.length == 0;
         var data = JSON.parse(e.data);
         var queries = data['message'];
         searchQueries.push.apply(searchQueries, queries);
-        if (isCacheEmpty) {
-            console.log('EMPTY START');
-            fromCacheToHtml();
-            showElements();
-        }
     };
-
     prideSocket.onclose = function (e) {
         console.error('Chat socket closed unexpectedly');
     };
 
-    function fromCacheToHtml() {
-        var elementsToShow = searchQueries.splice(0, 10); // should be same as in cron sender!!!!(TO DO)
-        var insert = '';
-        for (var i = 0; i < elementsToShow.length; i++) {
-            var item = elementsToShow[i];
-            insert += '<div class="wrap"><div class="item">' +
-                '<a class="link" target="_blank" href="https://www.yandex.ru/search/?text=' + item + '">' +
-                elementsToShow[i] +
-                '</div></div>';
+    function ready(fn) {
+        if (document.attachEvent ? document.readyState === "complete" : document.readyState !== "loading") {
+            fn();
+        } else {
+            document.addEventListener('DOMContentLoaded', fn);
         }
-        document.getElementById('search-items').innerHTML = insert;
     }
-
-    var w = window, d = document, e = d.documentElement, g = d.getElementsByTagName('body')[0];
-    var width = w.innerWidth || e.clientWidth || g.clientWidth;
-
 
     var delay = (function () {
         var timer = 0;
@@ -55,6 +56,45 @@
             timer = setTimeout(callback, ms);
         };
     })();
+
+    function checkForEntry() {
+        var isCacheEmpty = searchQueries.length === 0;
+        if (isCacheEmpty) {
+            delay(function () {
+                checkForEntry()
+            }, 500)
+        } else {
+            var home_quote = document.getElementById('home_quote');
+            home_quote.classList.remove('fadeInDown');
+            ['fadeInDown', 'slow'].map(item => home_quote.classList.remove(item));
+            home_quote.classList.add('fadeOutDown');
+            document.getElementById('header_div').classList.remove('hidden');
+            document.getElementById('head_1').classList.add('rotateInDownLeft');
+            document.getElementById('head_2').classList.add('rotateInDownRight');
+            fromCacheToHtml();
+            showElements();
+        }
+    }
+
+    ready(function () {
+        console.log("READY, WAIT 4000");
+        delay(function () {
+            checkForEntry()
+        }, 4000);
+    });
+
+    function fromCacheToHtml() {
+        var elementsToShow = searchQueries.splice(0, 10); // should be same as in cron sender!!!!(TO DO)
+        var insert = '';
+        for (var i = 0; i < elementsToShow.length; i++) {
+            var item = elementsToShow[i];
+            insert += '<div class="wrapper"><div class="item">' +
+                '<a class="link" target="_blank" href="https://www.yandex.ru/search/?text=' + item + '">' +
+                elementsToShow[i] +
+                '</div></div>';
+        }
+        document.getElementById('search-items').innerHTML = insert;
+    }
 
     function showElements() {
         console.log('!!!! ' + searchQueries.length);
@@ -75,7 +115,7 @@
         callback.complete = function () {
             delay(function () {
                 moveRight(els);
-            }, 3000);
+            }, 4000);
         };
     }
 
@@ -98,33 +138,17 @@
         }
     }
 
-
+    anime({
+        targets: '#ev_s',
+        color: [
+            {value: '#2196f3'},
+            {value: '#FFF'}
+        ],
+        loop: true,
+        easing: 'linear',
+        direction: 'alternate',
+        duration: 5000,
+    });
 </script>
-<style>
-    body {
-        background: #2196f3;
-        overflow-y: scroll;
-        overflow-x: hidden;
-    }
 
-    #search-items {
-        position: absolute;
-        top: 5%;
-        width: 100%;
-    }
-    .item {
-        text-align: center;
-    }
-    .wrap {
-        margin: 10px 10px;
-    }
-
-    .link {
-        color: white;
-        font-size: large;
-        font-size: 30px;
-        font-family: "Proxima Nova";
-        text-decoration: none;
-    }
-</style>
 </html>

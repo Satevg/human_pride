@@ -47,10 +47,9 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     'django_extensions',
-] + (['debug_toolbar', ] if DEBUG and not TEST_MODE else [])
+]
 
-DEBUG_MIDDLEWARE = ['debug_toolbar.middleware.DebugToolbarMiddleware'] if DEBUG and not TEST_MODE else []
-MIDDLEWARE = DEBUG_MIDDLEWARE + [
+MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -150,12 +149,6 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD', '')
 EMAIL_PORT = os.getenv('EMAIL_PORT', 25)
 EMAIL_USE_TLS = str2bool(os.getenv('EMAIL_USE_TLS', 'false'))
 EMAIL_USE_SSL = str2bool(os.getenv('EMAIL_USE_SSL', 'false'))
-
-if DEBUG and not TEST_MODE:
-    DEBUG_TOOLBAR_CONFIG = {
-        'SHOW_TOOLBAR_CALLBACK': lambda r: True,
-        'SHOW_COLLAPSED': True,
-    }
 
 if TEST_MODE:
     import logging

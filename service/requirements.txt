@@ -2,7 +2,6 @@ channels==2.1.2
 channels-redis==2.2.1
 coverage==4.5.1
 Django==2.0.7
-django-debug-toolbar==1.9.1
 django-extensions==2.0.7
 flake8==3.5.0
 mock==2.0.0
