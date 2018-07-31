@@ -5,9 +5,15 @@
 <link>
 <meta charset="utf-8"/>
 <title>{% trans 'Human pride' %}</title>
+<meta name=”description” content=”An example app showing people's latest search queries from yandex” />
+<meta property=”og:title” content=”Human Pride” />
+<meta property=”og:url” content=”http://satevg.com/" />
+<meta property=”og:image” content=”http://satevg.com/static/img/monkey.jpg" />
+
 <link rel="stylesheet" type="text/css" href="{% static 'fonts/ProximaNova/proxima.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/animate.min.css' %}"/>
 <link rel="stylesheet" type="text/css" href="{% static 'css/main.css' %}"/>
+<link rel="shortcut icon" href="{% static 'img/favicon.png' %}" type="image/x-icon"/>
 <script type="text/javascript" src="{% static 'js/anime.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'js/main.js' %}"></script>
 </head>
@@ -16,7 +22,6 @@
     <h1 id="head_1" class="animated slower">{% trans 'Human Pride' %}</h1>
     <h4 id="head_2" class="animated slower">{% trans 'Великие интернет запросы Великих людей' %}</h4>
 </div>
-
 <div class="wrap">
     <div id="home_quote" class="loading animated fadeInDown slow">
         <div id="ball" class="bounceball"></div>
@@ -25,8 +30,7 @@
 </div>
 
 
-<div id="search-items">
-</div>
+<div id="search-items"></div>
 <div id="footer"><a id="ev_s" href="https://github.com/Satevg/human_pride">Evgenii Sattarov</a></div>
 </body>
 
