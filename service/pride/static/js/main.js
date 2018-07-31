@@ -3,7 +3,7 @@ var searchQueries = [];
 prideSocket.onmessage = function (e) {
     var data = JSON.parse(e.data);
     var queries = data['message'];
-    if (searchQueries.length < 200) {
+    if (searchQueries.length < 50) {
         searchQueries.push.apply(searchQueries, queries);
     }
 };
@@ -44,6 +44,8 @@ function checkForEntry() {
         document.getElementById('head_1').classList.add('rotateInDownLeft');
         document.getElementById('head_2').classList.add('rotateInDownRight');
         fromCacheToHtml();
+        var ball = document.getElementById('ball');
+        ball.parentNode.removeChild(ball);
         showElements();
     }
 }
