@@ -8,3 +8,4 @@ service/media
 docker-compose.yml
 postgres-data/
 db.sqlite3
+dhparam-2048.pem

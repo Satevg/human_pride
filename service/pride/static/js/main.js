@@ -1,4 +1,4 @@
-var prideSocket = new WebSocket('ws://' + window.location.host + '/ws/humans/');
+var prideSocket = new WebSocket('wss://' + window.location.host + '/ws/humans/');
 var searchQueries = [];
 prideSocket.onmessage = function (e) {
     var data = JSON.parse(e.data);
