@@ -18,7 +18,7 @@ class Command(BaseCommand):
             response = requests.get('https://export.yandex.ru/last/last20x.xml')
             last_pride = ET.fromstring(response.content)[0]
             queries = [item.text for item in last_pride]
-            r.rpush('pride', *queries)
+            r.rpush(self.redis_key, *queries)
 
         return_num = 20
         elements = r.lrange(self.redis_key, 0, return_num - 1)
