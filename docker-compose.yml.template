@@ -31,6 +31,7 @@ services:
       - ./service/media/:/www/media
       - /docker-volumes/etc/letsencrypt/live/satevg.com/fullchain.pem:/etc/letsencrypt/live/satevg.com/fullchain.pem
       - /docker-volumes/etc/letsencrypt/live/satevg.com/privkey.pem:/etc/letsencrypt/live/satevg.com/privkey.pem
+      - /docker-volumes/data/letsencrypt:/data/letsencrypt
 
 # https://www.humankode.com/ssl/how-to-set-up-free-ssl-certificates-from-lets-encrypt-using-docker-and-nginx
 # CRON
