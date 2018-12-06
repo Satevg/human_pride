@@ -1,12 +1,12 @@
 channels==2.1.2
 channels-redis==2.2.1
 coverage==4.5.1
-Django==2.0.7
+Django==2.1.4
 django-extensions==2.0.7
 flake8==3.5.0
 mock==2.0.0
 psycopg2==2.7.5
 pytz==2018.5
 redis==2.10.6
-requests==2.19.1
+requests==2.20.1
 uWSGI==2.0.17
